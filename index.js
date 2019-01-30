@@ -13,7 +13,7 @@ import { schema, insert, retrieve, retrieveAll, update } from './models'
 const app = new Koa()
   .use(jsonBody())
   .use(postgresMiddleware(schema))
-const port = 8080 
+const port = 9001 
 const router = new Router() 
 
 router 
