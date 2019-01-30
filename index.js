@@ -35,7 +35,7 @@ router
   })
   .put('/cards', async ctx => {
     const data = ctx.request.body 
-    await PaymentRequestUpdateEvent(postgres(ctx), data.name, ctx.params.id)
+    await update(postgres(ctx), data.name, ctx.params.id)
     ctx.status = 204
   })
 
