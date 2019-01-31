@@ -16,6 +16,7 @@ import * as swagger from 'swagger2'
 const app = new Koa()
   .use(jsonBody())
   .use(postgresMiddleware(schema))
+  //.use('/', swaggerUi.serve)
 const port = 9001 
 const router = new Router() 
 
@@ -23,9 +24,11 @@ const spec = swagger.loadDocumentSync('./swagger.yaml')
 if (!swagger.validateDocument(spec)) {
   throw Error(`Invalid Swagger File`)
 }
+console.log(spec)
 
-app.use('/', swaggerUi.serve)
-app.get('/', swaggerUi.setup(spec))
+//app.use('/', swaggerUi.serve)
+
+//app.use('/v1', router)
 
 router 
   .post('/cards', async ctx => {
@@ -52,12 +55,11 @@ router
   .get('/swagger.json', ctx => {
     ctx.body = spec
   })
+  .get('/', swaggerUi.setup(spec))
 
   app.use(router.routes())
   app.use(router.allowedMethods())
-
-  app.use(postgresMiddleware())
-  app.use('/v1', router)
+ 
 
   app.listen(port, () => {
     console.log(`Server started at ${port}`)
