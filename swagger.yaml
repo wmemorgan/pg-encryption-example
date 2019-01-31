@@ -1,0 +1,110 @@
+swagger: '2.0'
+info: 
+  version: 1.0.0
+  title: My Encrypted Database API
+basePath: /v1
+consumes:
+  - application/json
+produces:
+  - application/json
+schemes:
+  - http
+  - https
+paths:
+  '/swagger.json':
+    get:
+      tags:
+        - Spec
+      operationId: getSwaggerSpec
+      description: | 
+        Get Swagger Spec
+      responses:
+        '200':
+          description: Successful
+          schema:
+            type: string
+  '/cards':
+    post:
+      tags:
+        - Cards
+      operationId: AddCardName
+      parameters:
+        - name: user
+          in: body
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+      description: | 
+        Add card name
+      responses:
+        '200':
+          description: Successful
+          schema:
+            type: string
+    get:
+      tags:
+        - Cards
+      operationId: GetCardName
+      description: | 
+        Get Card Name
+      responses:
+        '200':
+          description: Successful
+          schema:
+            type: string
+  '/cards/{id}':
+    get:
+      tags:
+        - Cards
+      operationId: GetCardNameByID
+      parameters:
+        - $ref: '#/parameters/id'
+      description: | 
+        Get card name by ID
+      responses:
+        '200':
+          description: Successful
+          schema:
+            type: string
+    put:
+      tags:
+        - Cards
+      operationId: UpdateCardsByID
+      parameters:
+        - $ref: '#/parameters/id'
+        - name: user
+          in: body
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+      description: | 
+        Update card record
+      responses:
+        '200':
+          description: Successful
+          schema:
+            type: string
+    delete:
+      tags:
+        - Cards
+      operationId: DeleteByID
+      parameters:
+        - $ref: '#/parameters/id'
+      description: | 
+        Delete Register User
+      responses:
+        '200':
+          description: Successful
+          schema:
+            type: string            
+parameters:
+  id:
+    in: path
+    name: id
+    required: true
+    type: string  
+  
