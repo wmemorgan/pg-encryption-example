@@ -11,7 +11,7 @@ const app = new Koa()
   .use(jsonBody())
   .use(
     swaggerUi({
-      routePrefix: '/v1',
+      routePrefix: '/',
       swaggerOptions: {
         url: '/swagger.json',
       },
@@ -49,11 +49,13 @@ router
     await update(postgres(ctx), data.name, ctx.params.id)
     ctx.status = 204
   })
-  .get('/v1/swagger.json', ctx => {
-    console.log(`Request received`)
+  .get('/swagger.json', ctx => {
     ctx.body = spec
   })
-
+  .get('/v1/swagger.json', ctx => {
+    ctx.redirect('/swagger.json')
+  })
+ 
 app.use(router.routes())
 app.use(router.allowedMethods())
 app.use(postgresMiddleware(schema))
