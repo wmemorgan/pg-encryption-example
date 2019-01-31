@@ -4,31 +4,27 @@ import jsonBody from 'koa-json-body'
 import { postgresMiddleware, postgres } from './postgres'
 import { schema, insert, retrieve, retrieveAll, update } from './models'
 
-import swaggerUi from 'swagger-ui-koa'
+import swaggerUi from 'koa2-swagger-ui'
 import * as swagger from 'swagger2'
-
-// const Koa = require('koa')
-// const Router = require('koa-router')
-// const jsonBody = require('koa-json-body')
-// const { postgresMiddleware, postgres } = require('./postgres')
-// const { schema, insert, retrieve, retrieveAll, update } = require('./models')
 
 const app = new Koa()
   .use(jsonBody())
-  .use(postgresMiddleware(schema))
-  //.use('/', swaggerUi.serve)
-const port = 9001 
+  .use(
+    swaggerUi({
+      routePrefix: '/v1',
+      swaggerOptions: {
+        url: '/swagger.json',
+      },
+    })
+  )
+  //.use(postgresMiddleware(schema))
+const port = 9001
 const router = new Router() 
 
 const spec = swagger.loadDocumentSync('./swagger.yaml')
 if (!swagger.validateDocument(spec)) {
   throw Error(`Invalid Swagger File`)
 }
-console.log(spec)
-
-//app.use('/', swaggerUi.serve)
-
-//app.use('/v1', router)
 
 router 
   .post('/cards', async ctx => {
@@ -39,6 +35,7 @@ router
   })
   .get('/cards', async ctx => {
     const data = retrieveAll(postgres(ctx))
+    console.log(ctx.req)
     ctx.status = 200
     ctx.body = data
   })
@@ -52,16 +49,14 @@ router
     await update(postgres(ctx), data.name, ctx.params.id)
     ctx.status = 204
   })
-  .get('/swagger.json', ctx => {
+  .get('/v1/swagger.json', ctx => {
+    console.log(`Request received`)
     ctx.body = spec
   })
-  .get('/', swaggerUi.setup(spec))
 
-  app.use(router.routes())
-  app.use(router.allowedMethods())
- 
+app.use(router.routes())
+app.use(router.allowedMethods())
+app.use(postgresMiddleware(schema))
 
-  app.listen(port, () => {
-    console.log(`Server started at ${port}`)
-  })
+app.listen(port)
   
