@@ -6,7 +6,7 @@ const secretKey = fs.readFileSync('./secret.key', toString)
 
 export const schema = {
   create: [
-    `CREATE Table cards(
+    `CREATE TABLE IF NOT EXISTS cards(
       id BIGSERIAL PRIMARY KEY,
       name BYTEA
     )`,
