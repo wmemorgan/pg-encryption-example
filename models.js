@@ -27,7 +27,7 @@ export async function retrieve(pg, id) {
 }
 
 export async function retrieveAll(pg) {
-  return pg.rows(`SELECT id, pgp_pub_decrypt(name, dearmor(${secret})) AS name from cards`)
+  return pg.rows(`SELECT id, pgp_pub_decrypt(name, dearmor(${secretKey})) AS name from cards`)
 }
 
 export async function update(pg, data, id) {
