@@ -23,6 +23,7 @@ export function postgresMiddleware(schema) {
   return async (ctx, next) => {
     await setupSchema(pg, schema)
     ctx._postgres = pg
+    return await next()
   }
 }
 
