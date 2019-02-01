@@ -1,9 +1,6 @@
 import PgAsync from 'pg-async'
 import one from 'once'
 
-// const PgAsync = require('pg-async')
-// const one = require('once')
-
 async function setup(pg, schema) {
   await pg.transaction(async tx => {
     const { drop, create } = schema
@@ -20,7 +17,7 @@ async function setup(pg, schema) {
   })
 }
 
-export function postgresMiddleware (schema) {
+export function postgresMiddleware(schema) {
   const pg = new PgAsync({ connectionString: "postgres://postgres@localhost:5432/securedb"})
   const setupSchema = one(setup)
   return async (ctx, next) => {
