@@ -1,5 +1,4 @@
 import fs from 'fs'
-// const fs = require('fs')
 
 const pubKey = fs.readFileSync('./public.key', toString)
 const secretKey = fs.readFileSync('./secret.key', toString)
