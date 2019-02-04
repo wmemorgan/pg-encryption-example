@@ -4,7 +4,8 @@ import jsonBody from 'koa-json-body'
 import { postgresMiddleware, postgres } from './postgres'
 import { schema, insert, retrieve, retrieveAll, update, deleteId } from './models'
 
-import swaggerUi from 'koa2-swagger-ui'
+//import swaggerUi from 'koa2-swagger-ui'
+import { ui, validate, router as swaggerRouter, Router as SwaggerRouter } from 'swagger2-koa'
 import * as swagger from 'swagger2'
 
 const app = new Koa()
@@ -25,6 +26,8 @@ const spec = swagger.loadDocumentSync('./swagger.yaml')
 if (!swagger.validateDocument(spec)) {
   throw Error(`Invalid Swagger File`)
 }
+console.log(`swagger spec: ${JSON.stringify(spec)}`)
+//app.use(ui(spec))
 
 router 
   .post('/cards', async ctx => {
@@ -52,16 +55,13 @@ router
   })
   .delete(`/cards/:id`, async ctx => {
     const card = await deleteId(postgres(ctx), ctx.params.id)
-    console.log(card)
     if (card.length === 0) {
       ctx.body = 'Delete successful!'
     }
   })
   .get('/swagger.json', ctx => {
+    console.log(`Get swagger.json`)
     ctx.body = spec
-  })
-  .get('/v1/swagger.json', ctx => {
-    ctx.redirect('/swagger.json')
   })
   .get('/hello', ctx => {
     console.log(`get request received ${JSON.stringify(ctx)}`)
@@ -70,7 +70,7 @@ router
  
 app.use(router.routes())
 app.use(router.allowedMethods())
-
+app.use(ui(spec))
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`)
