@@ -31,5 +31,12 @@ export async function retrieveAll(pg) {
 }
 
 export async function update(pg, data, id) {
-  return pg.rows(`UPDATE cards SET name = pgp_pub_encrypt(($1, dearmor(${pubKey}))) WHERE id = $2`, data, id)
+  return pg.rows(`UPDATE cards SET name = pgp_pub_encrypt($1, dearmor(${pubKey})) WHERE id = $2`, data, id)
+}
+
+export async function deleteId(pg, id) {
+  return pg.rows(
+    `DELETE FROM cards WHERE id=$1`,
+    id
+  )
 }

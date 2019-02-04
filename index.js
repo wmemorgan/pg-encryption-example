@@ -53,7 +53,9 @@ router
   .delete(`/cards/:id`, async ctx => {
     const card = await deleteId(postgres(ctx), ctx.params.id)
     console.log(card)
-    ctx.body = card
+    if (card.length === 0) {
+      ctx.body = 'Delete successful!'
+    }
   })
   .get('/swagger.json', ctx => {
     ctx.body = spec
