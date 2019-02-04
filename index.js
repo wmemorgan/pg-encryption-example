@@ -2,22 +2,22 @@ import Koa from 'koa'
 import Router from 'koa-router'
 import jsonBody from 'koa-json-body'
 import { postgresMiddleware, postgres } from './postgres'
-import { schema, insert, retrieve, retrieveAll, update } from './models'
+import { schema, insert, retrieve, retrieveAll, update, deleteId } from './models'
 
 import swaggerUi from 'koa2-swagger-ui'
 import * as swagger from 'swagger2'
 
 const app = new Koa()
   .use(jsonBody())
-  .use(
-    swaggerUi({
-      routePrefix: '/',
-      swaggerOptions: {
-        url: '/swagger.json',
-      },
-    })
-  )
-  //.use(postgresMiddleware(schema))
+  // .use(
+  //   swaggerUi({
+  //     routePrefix: '/',
+  //     swaggerOptions: {
+  //       url: '/swagger.json',
+  //     },
+  //   })
+  // )
+  .use(postgresMiddleware(schema))
 const port = 9001
 const router = new Router() 
 
@@ -34,20 +34,26 @@ router
     ctx.body = id[0].id
   })
   .get('/cards', async ctx => {
-    const data = retrieveAll(postgres(ctx))
-    console.log(ctx.req)
+    console.log(`CTX info for retrieveall: ${JSON.stringify(ctx)}`)
+    const data = await retrieveAll(postgres(ctx))
     ctx.status = 200
     ctx.body = data
   })
-  .get('/cards:id', async ctx => {
-    const data = retrieve(postgres(ctx), ctx.params.id)
+  .get('/cards/:id', async ctx => {
+    console.log(`CTX info: ${JSON.stringify(ctx.params)}`)
+    const data = await retrieve(postgres(ctx), ctx.params.id)
     ctx.status = 200
     ctx.body = data
   })
-  .put('/cards', async ctx => {
+  .put('/cards/:id', async ctx => {
     const data = ctx.request.body 
     await update(postgres(ctx), data.name, ctx.params.id)
     ctx.status = 204
+  })
+  .delete(`/cards/:id`, async ctx => {
+    const card = await deleteId(postgres(ctx), ctx.params.id)
+    console.log(card)
+    ctx.body = card
   })
   .get('/swagger.json', ctx => {
     ctx.body = spec
@@ -55,10 +61,16 @@ router
   .get('/v1/swagger.json', ctx => {
     ctx.redirect('/swagger.json')
   })
+  .get('/hello', ctx => {
+    console.log(`get request received ${JSON.stringify(ctx)}`)
+    ctx.body = `Hello World!!!`
+  })
  
 app.use(router.routes())
 app.use(router.allowedMethods())
-app.use(postgresMiddleware(schema))
 
-app.listen(port)
+
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`)
+})
   
